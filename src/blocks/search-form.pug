@@ -1,2 +1,4 @@
 .search-form
-    h1 search form
+    form.pure-form(method='POST' action 'index.html')
+        input#search.awesomplete(type='text', name='search', onkeypress='EnabledBtn()')
+        input#btn.pure-button(type='submit', name="buscar", value='Buscar', disabled='true', onclick='searchForm()')
