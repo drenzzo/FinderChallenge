@@ -22,7 +22,17 @@ html(lang="es")
                     .l-box
                         a.guardar(href='') Guardar busqueda
             aside.filters.pure-u-1-4
+                h2 Búsquedas guardadas
+                h2 Categorias
+                    include blocks/categories
+                h2 Idioma
+                    include blocks/language
+                h2 Publicación
+                    include blocks/publication
+                h2 Presentación
+                    include blocks/presentation
             content.pure-u-3-4
+                include blocks/results
             footer.pure-u-1
 
         //- third party libraries

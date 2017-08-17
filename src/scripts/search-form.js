@@ -6,8 +6,7 @@ function searchForm(){
     ajax.open("GET", "books-schema.json", true);
     ajax.onload = function() {
 	       list = JSON.parse(ajax.responseText).data;
-           console.log(list);
-           list.map(function(i) {
+           list =  list.map(function(i) {
                return i.title;
            });
 	new Awesomplete(input, {
@@ -15,18 +14,46 @@ function searchForm(){
         minChars: 3,
         maxItems: 7
      });
-};
-ajax.send();
+    };
+    ajax.send();
 }
 
-function EnabledBtn(){
+function GetAllBooks(){
+    var list = [];
+    var ajax = new XMLHttpRequest();
+    ajax.open("GET", "books-schema.json", true);
+    ajax.onload = function() {
+	    list = JSON.parse(ajax.responseText).data;
+        return list;
+    };
+    ajax.send();
+}
+function SearchItems(e, input){
 
-    var contenido = document.getElementById('search').value;
+    var query = document.getElementById('search').value;
+    query = query.toLowerCase();
 
-    if(contenido.length > 1 ){
+    var code = (e.keyCode ? e.keyCode : e.which);
+    var results = [];
+    var books  = [];
+    var res = [];
+
+
+    if(query.length > 1 ){
         document.getElementById('btn').disabled = false;
+
+        if(code == 13) { //Enter keycode
+            books = GetAllBooks();
+            results = _.filter(books, function(book){
+                console.log(book);
+                var title = book.title;
+                title = title.toLowerCase()
+                return title.indexOf(query) >= 0;
+            });
+        }
     }
     else{
-        document.getElementById('btn').disabled=true;
+        document.getElementById('btn').disabled = true;
+
     }
 }
