@@ -1,3 +1,17 @@
+function fetchJSONFile(path, callback) {
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.onreadystatechange = function() {
+        if (httpRequest.readyState === 4) {
+            if (httpRequest.status === 200) {
+                var data = JSON.parse(httpRequest.responseText);
+                if (callback) callback(data);
+            }
+        }
+    };
+    httpRequest.open('GET', path);
+    httpRequest.send(); 
+}
+
 function searchForm(){
     // code here
     var list = [];
@@ -18,42 +32,56 @@ function searchForm(){
     ajax.send();
 }
 
-function GetAllBooks(){
-    var list = [];
-    var ajax = new XMLHttpRequest();
-    ajax.open("GET", "books-schema.json", true);
-    ajax.onload = function() {
-	    list = JSON.parse(ajax.responseText).data;
-        return list;
-    };
-    ajax.send();
-}
 function SearchItems(e, input){
 
     var query = document.getElementById('search').value;
-    query = query.toLowerCase();
+    //query = query.toLowerCase();
 
     var code = (e.keyCode ? e.keyCode : e.which);
-    var results = [];
-    var books  = [];
-    var res = [];
+    
+    var ajax = new XMLHttpRequest();
+    ajax.open("GET", "books-schema.json", true);
+    ajax.onload = function() {
+        items = JSON.parse(ajax.responseText);
+        items = items.data;
+        //return books;
+    };
+    ajax.send();
 
-
-    if(query.length > 1 ){
+    if(query.length > 1){
         document.getElementById('btn').disabled = false;
-
         if(code == 13) { //Enter keycode
-            books = GetAllBooks();
-            results = _.filter(books, function(book){
-                console.log(book);
-                var title = book.title;
-                title = title.toLowerCase()
-                return title.indexOf(query) >= 0;
+
+            books = _.filter(items, function(item){
+                return (item.title.toLowerCase()).indexOf(query.toLowerCase()) > -1
             });
+            InsertResults(books);
         }
     }
     else{
         document.getElementById('btn').disabled = true;
 
     }
+}
+
+function InsertResults(books){
+    var results = '';
+    var i = 0;
+    var BreakException = {};
+
+    try{
+        books.forEach(function(book){
+            results += '<div class="pure-u-1-3"><img src="'+book.image+'" alt="'+book.title+'" /><h3>'+book.title+'</h3><p>'+book.teaser+'</p></div>';
+            i++;
+            if(i == 9) throw BreakException;
+        });
+    }catch (e){
+        if (e !== BreakException) throw e;
+    }
+
+    document.getElementById('results').innerHTML = results;
+    /*results = _.each(books, function(book){
+        return '<div class="pure-u-1-3"><img src="'+book.image+'" /><div>'+book.title+'</div><div>'+book.teaser+'</div></div>';
+    });
+    */
 }
